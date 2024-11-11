@@ -62,9 +62,9 @@ class Sltcs {
                         controlData.push({
                             TYPE: 'COLOR',
                             DATA: {
-                                R: splitData[1],
-                                G: splitData[2],
-                                B: splitData[3],
+                                R: Math.round(Number(splitData[1]) * Number(splitData[4])),
+                                G: Math.round(Number(splitData[2]) * Number(splitData[4])),
+                                B: Math.round(Number(splitData[3]) * Number(splitData[4])),
                                 A: splitData[4]
                             }
                         });

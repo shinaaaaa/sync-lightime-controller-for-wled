@@ -7,11 +7,14 @@ const sltcs_1 = __importDefault(require("./libs/sltcs"));
 const timerHR_1 = __importDefault(require("./libs/timerHR"));
 const timerHR_2 = __importDefault(require("./libs/timerHR"));
 const ws_1 = __importDefault(require("ws"));
-const WLED_WS_URL = 'ws://wled-shina.local/ws';
+// WLEDのアドレス
+// ws://[IPアドレス]/ws <- IPアドレスならこっち
+const WLED_WS_URL = 'ws://192.168.1.222/ws';
+// SLTCSのファイルパス
+const SLTCS_FILE_PATH = './src/taiyou_kiss.sltcs';
 // WebSocketクライアントの作成と接続
 const ws = new ws_1.default(WLED_WS_URL);
 // SLTCSの作成
-const SLTCS_FILE_PATH = './drafts/test2.sltcs';
 const SLTCS = new sltcs_1.default(SLTCS_FILE_PATH);
 let data = SLTCS.getControlData();
 async function main() {
@@ -30,9 +33,8 @@ async function main() {
     });
     console.log('ready');
     await timerHR_1.default.countdown(2);
-    // console.log(data);
     console.log('start');
-    await hogehoge(data);
+    await playSltcsData(data);
     console.log('END');
     ws.close();
 }
@@ -43,12 +45,11 @@ async function main() {
  * @param b blue
  * @param a alpha (brightness)
  */
-function setColorRGBA(r, g, b, a = '255') {
+function setColorRGBA(r, g, b, a = '1') {
     try {
         // WLEDに送信するペイロードの作成
         const payload = {
             on: true,
-            bri: Number(a) / 100,
             seg: [{
                     col: [[r, g, b]]
                 }]
@@ -69,7 +70,7 @@ function setColorRGBA(r, g, b, a = '255') {
 async function setColorObj(controlData) {
     setColorRGBA(controlData.DATA.R, controlData.DATA.G, controlData.DATA.B, controlData.DATA.A);
 }
-async function hogehoge(controlData) {
+async function playSltcsData(controlData) {
     const startTime = timerHR_1.default.getTime();
     let changeColorTime = startTime;
     let diffTime = 0;
@@ -104,6 +105,7 @@ async function hogehoge(controlData) {
         }
     }
 }
+// ラグ(nodejsの処理遅延)を計算する関数
 function diffCalc(changeColorTime, specTime) {
     console.log(`ChangeTime: ${changeColorTime}`);
     console.log(`SpecTime  : ${specTime}`);
